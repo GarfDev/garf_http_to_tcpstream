@@ -42,12 +42,14 @@ pub struct Packet {
 
 impl Packet {
     pub fn new(id: i32, ptype: PacketType, body: String) -> Packet {
-        Packet {
+        let pack = Packet {
             length: 10 + body.len() as i32,
             id,
             ptype,
             body,
-        }
+        };
+        // print!("{:?}", pack);
+        pack
     }
 
     pub fn is_error(&self) -> bool {
@@ -62,7 +64,7 @@ impl Packet {
         io::Write::write(&mut buf, &self.ptype.to_i32().to_le_bytes()).unwrap();
         io::Write::write(&mut buf, self.body.as_bytes()).unwrap();
         io::Write::write(&mut buf, b"\x00\x00").unwrap();
-
+        // print!("{:?}", &buf);
         w.write(&buf).await?;
 
         Ok(())
