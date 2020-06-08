@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 err-derive = "0.2.2"
 tokio = { version = "0.2.13", features = ["tcp", "io-util", "dns", "time"] }
+dotenv = { version = "0.15.0" }
 
 [dev-dependencies]
 tokio = { version = "0.2.13", features = ["macros"] }

@@ -55,11 +55,8 @@ impl Packet {
     }
 
     pub async fn serialize<T: Unpin + AsyncWrite>(&self, w: &mut T) -> io::Result<()> {
-        // Write bytes to a buffer first so only one tcp packet is sent
-        // This is done in order to not overwhelm a Minecraft server
         let mut buf = Vec::with_capacity(self.length as usize);
 
-        // AsyncWrite writes it's data using big endian, since we need little endian we manually convert it to bytes
         io::Write::write(&mut buf, &self.length.to_le_bytes()).unwrap();
         io::Write::write(&mut buf, &self.id.to_le_bytes()).unwrap();
         io::Write::write(&mut buf, &self.ptype.to_i32().to_le_bytes()).unwrap();
@@ -72,7 +69,6 @@ impl Packet {
     }
 
     pub async fn deserialize<T: Unpin + AsyncRead>(r: &mut T) -> io::Result<Packet> {
-        // AsyncRead read it's data using big endian, so we need to swap the bytes
         let length = i32::from_be(r.read_i32().await?);
         let id = i32::from_be(r.read_i32().await?);
         let ptype = i32::from_be(r.read_i32().await?);
@@ -83,7 +79,6 @@ impl Packet {
             .await?;
         let body = String::from_utf8(body_buffer)
             .map_err(|_| io::Error::from(io::ErrorKind::InvalidData))?;
-        // terminating nulls
         r.read_u16().await?;
 
         let packet = Packet {

@@ -1,20 +1,23 @@
 use rcon::{Connection, Error};
+use dotenv;
+use std::env;
 
 mod rcon;
 
-/*
-    This example expects a Minecraft with rcon enabled on port 25575
-    and the rcon password "test"
-*/
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    let address = "0.0.0.0:3333";
-    let mut conn = Connection::connect(address, "test").await?;
+    dotenv::from_filename(".env").ok();
+    for (key, value) in env::vars() {
+        println!("{}: {}", key, value);
+    }
+    let rcon_address = env::var("RCON_ADDRESS").unwrap();
+    let rcon_password = env::var("RCON_PASSWORD").unwrap();
+
+    let mut conn = Connection::connect(rcon_address, &rcon_password).await?;
 
     demo(&mut conn, "list").await?;
     demo(&mut conn, "say Rust lang rocks! ;P").await?;
-    //demo(&mut conn, "stop");
     Ok(())
 }
 

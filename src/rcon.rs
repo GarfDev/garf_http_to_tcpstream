@@ -42,9 +42,6 @@ impl Connection {
     }
 
     pub async fn cmd(&mut self, cmd: &str) -> Result<String> {
-        // Minecraft only supports a request payload length of max 1446 byte.
-        // However some tests showed that only requests with a payload length
-        // of 1413 byte or lower work reliable.
         if cmd.len() > 1413 {
             return Err(Error::CommandTooLong);
         }
@@ -52,14 +49,9 @@ impl Connection {
         self.send(PacketType::ExecCommand, cmd).await?;
 
         if cfg!(feature = "delay") {
-            // We are simply too swift for the Notchian minecraft server
-            // Give it some time to breath and not kill out connection
-            // Issue described here https://bugs.mojang.com/browse/MC-72390
             delay_for(Duration::from_millis(DELAY_TIME_MILLIS)).await;
         }
 
-        // the server processes packets in order, so send an empty packet and
-        // remember its id to detect the end of a multi-packet response
         let end_id = self.send(PacketType::ExecCommand, "").await?;
 
         let mut result = String::new();
@@ -111,8 +103,6 @@ impl Connection {
     fn generate_packet_id(&mut self) -> i32 {
         let id = self.next_packet_id;
 
-        // only use positive ids as the server uses negative ids to signal
-        // a failed authentication request
         self.next_packet_id = self
             .next_packet_id
             .checked_add(1)
