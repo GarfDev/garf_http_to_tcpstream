@@ -8,9 +8,6 @@ mod rcon;
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     dotenv::from_filename(".env").ok();
-    for (key, value) in env::vars() {
-        println!("{}: {}", key, value);
-    }
     let rcon_address = env::var("RCON_ADDRESS").unwrap();
     let rcon_password = env::var("RCON_PASSWORD").unwrap();
 
