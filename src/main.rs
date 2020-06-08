@@ -1,11 +1,25 @@
-use tokio::net::TcpStream;
-use tokio::prelude::*;
+use rcon::{Connection, Error};
+
+mod rcon;
+
+/*
+    This example expects a Minecraft with rcon enabled on port 25575
+    and the rcon password "test"
+*/
 
 #[tokio::main]
-async fn main() {
-    let mut stream = TcpStream::connect("127.0.0.1:6142").await.unwrap();
-    println!("created stream");
+async fn main() -> Result<(), Error> {
+    let address = "0.0.0.0:3333";
+    let mut conn = Connection::connect(address, "test").await?;
 
-    let result = stream.write(b"hello world\n").await;
-    println!("wrote to stream; success={:?}", result.is_ok());
+    demo(&mut conn, "list").await?;
+    demo(&mut conn, "say Rust lang rocks! ;P").await?;
+    //demo(&mut conn, "stop");
+    Ok(())
+}
+
+async fn demo(conn: &mut Connection, cmd: &str) -> Result<(), Error> {
+    let resp = conn.cmd(cmd).await?;
+    println!("{}", resp);
+    Ok(())
 }
