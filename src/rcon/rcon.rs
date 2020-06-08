@@ -1,11 +1,9 @@
 use err_derive::Error;
-use packet::{Packet, PacketType};
+use super::packet::{Packet, PacketType};
 use std::io;
 use std::time::Duration;
 use tokio::net::{TcpStream, ToSocketAddrs};
 use tokio::time::delay_for;
-
-mod packet;
 
 #[derive(Debug, Error)]
 pub enum Error {

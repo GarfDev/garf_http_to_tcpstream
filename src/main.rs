@@ -13,11 +13,12 @@ async fn main() {
     let rcon_password = env::var("RCON_PASSWORD").unwrap();
 
     let mut connection = Connection::connect(rcon_address, &rcon_password).await.unwrap();
+    send(&mut connection, "help").await.unwrap();
 
 }
 
 async fn send(conn: &mut Connection, cmd: &str) -> Result<(), Error> {
     let resp = conn.cmd(cmd).await?;
-    // println!("{}", resp);
+    println!("{}", resp);
     Ok(())
 }
