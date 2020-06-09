@@ -26,7 +26,6 @@ async fn send(conn: &mut Connection, cmd: &str) -> Result<String, Error> {
 async fn call_command(command: web::Json<Command>) -> Result<String> {
     let rcon_address = env::var("RCON_ADDRESS").unwrap();
     let rcon_password = env::var("RCON_PASSWORD").unwrap();
-    // print!("{}:{}",rcon_address,rcon_password);
     let mut connection = Connection::connect(rcon_address, &rcon_password).await.unwrap();
     let result = send(&mut connection, &command.command).await.unwrap();
 
