@@ -4,26 +4,31 @@
 
 FROM rust:latest as rcon-build
 
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y git
+
 RUN apt-get update
 
 RUN apt-get install musl-tools -y
 
 RUN rustup target add x86_64-unknown-linux-musl
 
-WORKDIR /usr/src/rcon
+WORKDIR /usr/src
 
-COPY Cargo.toml Cargo.toml
+# COPY Cargo.toml Cargo.toml
 
-RUN mkdir src/
+# RUN mkdir src/
 
-RUN echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
+# RUN echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
 
-RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
+# RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
 
 RUN rm -f target/x86_64-unknown-linux-musl/release/deps/rcon*
 
+RUN git clone https://github.com/GarfDev/garf_http_to_tcpstream.git /usr/src/rcon
 
-COPY . .
+WORKDIR /usr/src/rcon
 
 RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
 

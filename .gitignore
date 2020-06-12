@@ -2,3 +2,7 @@
 .gitignore
 Cargo.lock
 /.vscode
+.env
+.dockerignore
+.docker-compose.yml
+Dockerfile
