@@ -1,9 +1,15 @@
-
 version: "3"
 services:
   rcon:
+    build: .
+    networks:
+      - core-underrated
     ports:
       - "3030:3030"
     environment:
-      - RCON_ADDRESS=${RCON_ADDRESS}
-      - RCON_PASSWORD=${RCON_PASSWORD}
+      - RCON_ADDRESS=0.0.0.0:25575
+      - RCON_PASSWORD=31101998
+
+networks:
+  core-underrated:
+    external: true

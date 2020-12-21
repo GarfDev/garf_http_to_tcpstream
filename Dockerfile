@@ -2,7 +2,7 @@
 # Cargo Build Stage
 # ------------------------------------------------------------------------------
 
-FROM rust:latest as rcon-build
+FROM rust:1.43 as rcon-build
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -26,7 +26,7 @@ WORKDIR /usr/src
 
 RUN rm -f target/x86_64-unknown-linux-musl/release/deps/rcon*
 
-RUN git clone https://github.com/GarfDev/garf_http_to_tcpstream.git /usr/src/rcon
+COPY ./ /usr/src/rcon
 
 WORKDIR /usr/src/rcon
 
@@ -44,6 +44,8 @@ RUN adduser -D -s /bin/sh -u 1000 -G rcon rcon
 
 WORKDIR /home/rcon/bin/
 
+EXPOSE 3030
+
 COPY --from=rcon-build /usr/src/rcon/target/x86_64-unknown-linux-musl/release/rcon .
 
 RUN chown rcon:rcon rcon
@@ -51,5 +53,3 @@ RUN chown rcon:rcon rcon
 USER rcon
 
 CMD ["./rcon"]
-
-EXPOSE 3030
